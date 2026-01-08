@@ -9,7 +9,7 @@ import {
   (async function() {
     // Bootstrap Camera Kit using your API token.
     const cameraKit = await bootstrapCameraKit({
-      apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNjg0ODMxMTQ0LCJzdWIiOiJlYTg4ZjQyZC0xYmM5LTRkN2YtYTMwMS02Y2M4YzU2OTg2Y2J-U1RBR0lOR340OGY1YjJmYS1iZGNjLTQ5MzAtYjI2NS1jNGYzODliMzAwYjAifQ.BojCwDCBLoh_7wsjjiM59vkpvdCDUyDd0WVMcFjcei0'
+      apiToken: 'eyJhbGciOiJIUzI1NiIsImtpZCI6IkNhbnZhc1MyU0hNQUNQcm9kIiwidHlwIjoiSldUIn0.eyJhdWQiOiJjYW52YXMtY2FudmFzYXBpIiwiaXNzIjoiY2FudmFzLXMyc3Rva2VuIiwibmJmIjoxNzY3ODk2OTUxLCJzdWIiOiJhMjgzMDFjOS0yZDBiLTRkNzktODcwNC0zMWMxYmQ3M2E1NjJ-U1RBR0lOR34zOGU0NWNlYS01ZmEyLTQ4MTAtYTM1Zi1jNmYxZTY1OTQ1ODAifQ.atiS_KPVKiGxq-pig3yoRkciUmr88LDb4ZINfeEXVz0'
     });
   
     // Create a new CameraKit session.
@@ -19,7 +19,7 @@ import {
     document.getElementById('canvas').replaceWith(session.output.live);
   
     // Load the specified lens group.
-    const { lenses } = await cameraKit.lensRepository.loadLensGroups(['5743f022-58f8-4521-a42e-b5908eadfae1'])
+    const { lenses } = await cameraKit.lensRepository.loadLensGroups(['2947393c-a834-4b70-a1b0-9481b5ef5709'])
   
     // Apply the first lens in the lens group to the CameraKit session.
     session.applyLens(lenses[0]);
