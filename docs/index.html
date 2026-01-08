@@ -1,241 +1,404 @@
-<!DOCTYPE html>
-<html lang="fr">
-  <head>
-    <meta charset="utf-8">
-    <title>AR Game Figures</title>
-    <meta name="description" content="AR игровые фигуры с камерой">
-    <meta name="robots" content="noindex">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
+/* Основные стили */
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Segoe UI', Arial, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+/* Canvas для AR */
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: none;
+    background: #000;
+}
+
+/* Кнопка запуска AR */
+#startButton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px 40px;
+    font-size: 24px;
+    background: linear-gradient(135deg, #FFFC00, #FFD700);
+    color: #000;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(255, 252, 0, 0.3);
+    transition: all 0.3s ease;
+    font-weight: bold;
+    min-width: 200px;
+    text-align: center;
+    display: block;
+    animation: fadeIn 0.5s ease-out, pulse 2s infinite;
+}
+
+#startButton:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 15px 40px rgba(255, 252, 0, 0.4);
+}
+
+#startButton:active {
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+#startButton:disabled {
+    background: #666;
+    color: #999;
+    cursor: not-allowed;
+    animation: none;
+    transform: translate(-50%, -50%);
+    box-shadow: none;
+}
+
+/* Индикатор загрузки */
+#loading {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    z-index: 999;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    min-width: 250px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.spinner {
+    border: 5px solid rgba(255, 255, 255, 0.2);
+    border-top: 5px solid #FFFC00;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+#loadingText {
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+/* Сообщение об ошибке */
+#errorMessage {
+    display: none;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, rgba(255, 71, 87, 0.95), rgba(255, 56, 56, 0.95));
+    color: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    z-index: 1001;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.5;
+    box-shadow: 0 5px 20px rgba(255, 56, 56, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+/* Инструкции */
+#instructions {
+    display: none;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.instructions-content {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(20, 20, 20, 0.9));
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+}
+
+.instructions-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #FFFC00;
+}
+
+.instructions-steps {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.surface-status {
+    color: #FFFC00;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 15px 0;
+    min-height: 24px;
+}
+
+.instructions-tip {
+    font-size: 13px;
+    color: #aaa;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Логотип Snapchat */
+.poweredbysnap-logo {
+    width: 100%;
+    position: absolute;
+    bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.poweredbysnap-logo > img {
+    width: 180px;
+    max-width: 50%;
+    height: auto;
+    opacity: 0.9;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+}
+
+/* Тестовая кнопка */
+.test-button {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    font-size: 16px;
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    z-index: 1002;
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+    transition: all 0.3s ease;
+    display: none;
+}
+
+.test-button:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+}
+
+/* Кнопка перезапуска */
+.restart-button {
+    position: absolute;
+    bottom: 150px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    font-size: 16px;
+    background: linear-gradient(135deg, #4CAF50, #388E3C);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    z-index: 1002;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    transition: all 0.3s ease;
+    display: none;
+}
+
+.restart-button:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+/* Анимации */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 10px 30px rgba(255, 252, 0, 0.3); }
+    50% { box-shadow: 0 10px 40px rgba(255, 252, 0, 0.5); }
+    100% { box-shadow: 0 10px 30px rgba(255, 252, 0, 0.3); }
+}
+
+@keyframes surfaceFound {
+    0% { color: #FFFC00; }
+    50% { color: #00FF00; }
+    100% { color: #FFFC00; }
+}
+
+.surface-found {
+    animation: surfaceFound 1s ease-in-out;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    #startButton {
+        padding: 18px 35px;
+        font-size: 20px;
+        min-width: 180px;
+    }
     
-    <link href="index.css" rel="stylesheet">
-    <style>
-      /* Дополнительные стили для кнопки */
-      #startButton {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 20px 40px;
-        font-size: 24px;
-        background: #FFFC00;
-        color: black;
-        border: none;
-        border-radius: 50px;
-        cursor: pointer;
-        z-index: 1000;
-        font-weight: bold;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        transition: transform 0.2s;
-      }
-      
-      #startButton:hover {
-        transform: translate(-50%, -50%) scale(1.05);
-      }
-      
-      #startButton:active {
-        transform: translate(-50%, -50%) scale(0.95);
-      }
-      
-      /* Индикатор загрузки */
-      #loading {
-        display: none;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0,0,0,0.8);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        z-index: 999;
-      }
-      
-      .spinner {
-        border: 4px solid rgba(255,255,255,0.3);
-        border-top: 4px solid #FFFC00;
-        border-radius: 50%;
+    #instructions {
+        left: 15px;
+        right: 15px;
+    }
+    
+    .instructions-content {
+        padding: 18px;
+    }
+    
+    .instructions-title {
+        font-size: 18px;
+    }
+    
+    .instructions-steps {
+        font-size: 14px;
+    }
+    
+    .poweredbysnap-logo {
+        bottom: 20px;
+    }
+    
+    .poweredbysnap-logo > img {
+        width: 160px;
+    }
+    
+    .test-button, .restart-button {
+        bottom: 90px;
+        padding: 10px 20px;
+        font-size: 15px;
+    }
+    
+    .restart-button {
+        bottom: 140px;
+    }
+}
+
+@media (max-width: 480px) {
+    #startButton {
+        padding: 16px 30px;
+        font-size: 18px;
+        min-width: 160px;
+    }
+    
+    #instructions {
+        left: 10px;
+        right: 10px;
+        top: 15px;
+    }
+    
+    .instructions-content {
+        padding: 15px;
+    }
+    
+    .instructions-title {
+        font-size: 16px;
+    }
+    
+    .instructions-steps {
+        font-size: 13px;
+    }
+    
+    .surface-status {
+        font-size: 14px;
+    }
+    
+    .poweredbysnap-logo > img {
+        width: 140px;
+    }
+    
+    .spinner {
         width: 40px;
         height: 40px;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 10px;
-      }
-      
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-      
-      /* Сообщение об ошибке */
-      #errorMessage {
-        display: none;
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        right: 20px;
-        background: rgba(255,0,0,0.9);
-        color: white;
-        padding: 15px;
-        border-radius: 10px;
-        z-index: 1001;
-        text-align: center;
-      }
-      
-      /* Инструкция */
-      #instructions {
-        display: none;
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        right: 20px;
-        background: rgba(0,0,0,0.7);
-        color: white;
-        padding: 15px;
-        border-radius: 10px;
-        z-index: 100;
-        text-align: center;
-        font-size: 14px;
-      }
-    </style>
-    <script src="./packed.js"></script>
-  </head>
+    }
+    
+    #loading {
+        padding: 25px;
+        min-width: 220px;
+    }
+}
 
-  <body>
-    <!-- Кнопка запуска AR -->
-    <button id="startButton">🎮 Запустить AR</button>
+/* Для высоких экранов */
+@media (min-height: 800px) {
+    .poweredbysnap-logo {
+        bottom: 30px;
+    }
     
-    <!-- Индикатор загрузки -->
-    <div id="loading">
-      <div class="spinner"></div>
-      <div>Загрузка AR...</div>
-    </div>
+    #startButton {
+        padding: 22px 45px;
+        font-size: 26px;
+    }
     
-    <!-- Сообщение об ошибке -->
-    <div id="errorMessage"></div>
+    .test-button {
+        bottom: 120px;
+    }
     
-    <!-- Инструкция -->
-    <div id="instructions">
-      Наведите камеру на ровную поверхность (стол, пол). Фигура появится автоматически.
-    </div>
+    .restart-button {
+        bottom: 180px;
+    }
+}
+
+/* Ландшафтная ориентация */
+@media (orientation: landscape) and (max-height: 500px) {
+    #instructions {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+    }
     
-    <!-- Логотип Snapchat -->
-    <div class="poweredbysnap-logo">
-      <img id="image" src="./assets/Powered_bysnap.png" alt="Powered by Snap">
-    </div>
+    .instructions-content {
+        padding: 12px;
+    }
     
-    <!-- Canvas для AR (изначально скрыт) -->
-    <canvas id="canvas" style="display: none;"></canvas>
+    .instructions-title {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
     
-    <!-- Видео элемент -->
-    <video id="video" style="display: none;" autoplay muted playsinline></video>
+    .instructions-steps {
+        font-size: 12px;
+        line-height: 1.4;
+    }
     
-    <script>
-      // Этот скрипт будет работать с уже скомпилированным packed.js
-      // Добавляем обработчик для кнопки
-      document.addEventListener('DOMContentLoaded', function() {
-        const startButton = document.getElementById('startButton');
-        const loading = document.getElementById('loading');
-        const errorMessage = document.getElementById('errorMessage');
-        const canvas = document.getElementById('canvas');
-        const instructions = document.getElementById('instructions');
-        
-        // Функция проверки поддержки камеры
-        function checkCameraSupport() {
-          return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-        }
-        
-        // Функция проверки HTTPS
-        function isSecureContext() {
-          return window.location.protocol === 'https:' || 
-                 window.location.hostname === 'localhost' || 
-                 window.location.hostname === '127.0.0.1';
-        }
-        
-        // Проверка при загрузке
-        if (!checkCameraSupport()) {
-          errorMessage.textContent = 'Ваш браузер не поддерживает камеру. Пожалуйста, обновите браузер.';
-          errorMessage.style.display = 'block';
-          startButton.disabled = true;
-          startButton.textContent = '❌ Не поддерживается';
-        }
-        
-        if (!isSecureContext() && window.location.hostname !== 'localhost') {
-          errorMessage.textContent = 'Требуется HTTPS. Откройте https://' + window.location.host;
-          errorMessage.style.display = 'block';
-        }
-        
-        // Обработчик кнопки запуска
-        startButton.addEventListener('click', async function() {
-          startButton.style.display = 'none';
-          loading.style.display = 'block';
-          
-          try {
-            // Запускаем камеру
-            const stream = await navigator.mediaDevices.getUserMedia({
-              video: {
-                facingMode: 'environment',
-                width: { ideal: 1280 },
-                height: { ideal: 720 }
-              }
-            });
-            
-            // Показываем инструкции
-            instructions.style.display = 'block';
-            
-            // Скрываем загрузку
-            loading.style.display = 'none';
-            
-            // Показываем canvas (если packed.js его не показал)
-            canvas.style.display = 'block';
-            
-            // Сохраняем поток для возможного использования
-            window.cameraStream = stream;
-            
-            // Если есть глобальная функция для запуска AR, вызываем её
-            if (window.startAR) {
-              window.startAR(stream);
-            }
-            
-          } catch (error) {
-            console.error('Camera error:', error);
-            loading.style.display = 'none';
-            startButton.style.display = 'block';
-            
-            let message = 'Ошибка: ';
-            switch(error.name) {
-              case 'NotAllowedError':
-                message = 'Доступ к камере запрещен. Разрешите камеру в настройках браузера.';
-                break;
-              case 'NotFoundError':
-                message = 'Камера не найдена. Убедитесь, что камера подключена и не занята другим приложением.';
-                break;
-              case 'NotReadableError':
-                message = 'Камера занята другим приложением. Закройте другие приложения, использующие камеру.';
-                break;
-              default:
-                message = 'Не удалось получить доступ к камере: ' + error.message;
-            }
-            
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-          }
-        });
-        
-        // Авто-проверка: если пользователь уже разрешил камеру ранее
-        navigator.permissions && navigator.permissions.query({ name: 'camera' })
-          .then(function(permissionStatus) {
-            if (permissionStatus.state === 'granted') {
-              startButton.textContent = '🎮 Камера разрешена - Запустить AR';
-            }
-            permissionStatus.onchange = function() {
-              if (this.state === 'granted') {
-                startButton.textContent = '🎮 Камера разрешена - Запустить AR';
-              }
-            };
-          });
-      });
-    </script>
-  </body>
-</html>
+    .poweredbysnap-logo {
+        bottom: 15px;
+    }
+    
+    .poweredbysnap-logo > img {
+        width: 120px;
+    }
+}
