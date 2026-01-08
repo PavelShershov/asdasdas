@@ -1,35 +1,30 @@
+/* Основные стили */
 body {
     margin: 0;
     padding: 0;
     overflow: hidden;
     background: #000;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Segoe UI', Arial, sans-serif;
     height: 100vh;
     width: 100vw;
     -webkit-tap-highlight-color: transparent;
-  }
+    touch-action: manipulation;
+}
 
-  #output-canvas {
+/* Canvas для AR */
+#canvas {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     z-index: 1;
-  }
+    display: none;
+    background: #000;
+}
 
-  #canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    display: none; /* Скрыт по умолчанию */
-  }
-
-  /* Кнопка запуска AR */
-  #startButton {
+/* Кнопка запуска AR */
+#startButton {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -45,37 +40,38 @@ body {
     box-shadow: 0 10px 30px rgba(255, 252, 0, 0.3);
     transition: all 0.3s ease;
     font-weight: bold;
-    display: block;
     min-width: 200px;
     text-align: center;
-    touch-action: manipulation;
-  }
+    display: block;
+    animation: fadeIn 0.5s ease-out, pulse 2s infinite;
+}
 
-  #startButton:hover {
+#startButton:hover {
     transform: translate(-50%, -50%) scale(1.05);
     box-shadow: 0 15px 40px rgba(255, 252, 0, 0.4);
-  }
+}
 
-  #startButton:active {
+#startButton:active {
     transform: translate(-50%, -50%) scale(0.95);
-  }
+}
 
-  #startButton:disabled {
+#startButton:disabled {
     background: #666;
     color: #999;
     cursor: not-allowed;
+    animation: none;
     transform: translate(-50%, -50%);
     box-shadow: none;
-  }
+}
 
-  /* Индикатор загрузки */
-  #loading {
+/* Индикатор загрузки */
+#loading {
     display: none;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.9);
     color: white;
     padding: 30px;
     border-radius: 20px;
@@ -83,10 +79,11 @@ body {
     z-index: 999;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    min-width: 200px;
-  }
+    min-width: 250px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
 
-  .spinner {
+.spinner {
     border: 5px solid rgba(255, 255, 255, 0.2);
     border-top: 5px solid #FFFC00;
     border-radius: 50%;
@@ -94,205 +91,314 @@ body {
     height: 50px;
     animation: spin 1s linear infinite;
     margin: 0 auto 20px;
-  }
+}
 
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+#loadingText {
+    font-size: 16px;
+    margin-top: 10px;
+}
 
-  /* Сообщение об ошибке */
-  #errorMessage {
+/* Сообщение об ошибке */
+#errorMessage {
     display: none;
     position: absolute;
     top: 20px;
     left: 20px;
     right: 20px;
-    background: linear-gradient(135deg, #ff4757, #ff3838);
+    background: linear-gradient(135deg, rgba(255, 71, 87, 0.95), rgba(255, 56, 56, 0.95));
     color: white;
-    padding: 15px;
+    padding: 15px 20px;
     border-radius: 12px;
     z-index: 1001;
     text-align: center;
     font-size: 14px;
+    line-height: 1.5;
     box-shadow: 0 5px 20px rgba(255, 56, 56, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
 
-  /* Инструкция */
-  #instructions {
+/* Инструкции */
+#instructions {
     display: none;
     position: absolute;
     top: 20px;
     left: 20px;
     right: 20px;
+    z-index: 100;
+}
+
+.instructions-content {
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(20, 20, 20, 0.9));
     color: white;
-    padding: 15px;
-    border-radius: 12px;
-    z-index: 100;
+    padding: 20px;
+    border-radius: 15px;
     text-align: center;
-    font-size: 14px;
-    line-height: 1.5;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-  }
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+}
 
-  .button-class {
-    z-index: 999;
-    position: absolute;
-    height: 50px;
-    width: 100px;
-    font-size: 1.5em;
-  }
-  
-  .select-menu {
-    position: absolute;
-    top: 20px;
-    z-index: 100;
-    height: 50px;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 10px;
-    padding: 5px;
-  }
+.instructions-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #FFFC00;
+}
 
-  .select-menu > select {
-    max-width: 200px;
-    height: 100%;
-    font-size: 1.5em;
-    background: transparent;
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 5px;
-    padding: 0 10px;
-  }
+.instructions-steps {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    color: #fff;
+}
 
-  .flamingo-logo {
+.surface-status {
+    color: #FFFC00;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 15px 0;
+    min-height: 24px;
+}
+
+.instructions-tip {
+    font-size: 13px;
+    color: #aaa;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Логотип Snapchat */
+.poweredbysnap-logo {
     width: 100%;
     position: absolute;
-    top: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 50;
-  }
-
-  .flamingo-logo > img {
-    width: 300px;
-    max-width: 80%;
-    height: auto;
-  }
-
-  .poweredbysnap-logo {
-    width: 100%;
-    position: absolute;
-    bottom: 30px; /* Уменьшил отступ для мобильных */
+    bottom: 25px;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 100;
     pointer-events: none;
-  }
+}
 
-  .poweredbysnap-logo > img {
-    width: 180px; /* Немного уменьшил */
+.poweredbysnap-logo > img {
+    width: 180px;
     max-width: 50%;
     height: auto;
     opacity: 0.9;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-  }
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+}
 
-  /* Адаптивность для мобильных */
-  @media (max-width: 768px) {
-    #startButton {
-      padding: 18px 35px;
-      font-size: 20px;
-      min-width: 180px;
-    }
-    
-    #instructions {
-      font-size: 13px;
-      padding: 12px;
-      left: 15px;
-      right: 15px;
-    }
-    
-    #errorMessage {
-      font-size: 13px;
-      padding: 12px;
-      left: 15px;
-      right: 15px;
-    }
-    
-    .poweredbysnap-logo {
-      bottom: 20px;
-    }
-    
-    .poweredbysnap-logo > img {
-      width: 150px;
-    }
-    
-    .flamingo-logo > img {
-      width: 250px;
-    }
-  }
+/* Тестовая кнопка */
+.test-button {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    font-size: 16px;
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    z-index: 1002;
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+    transition: all 0.3s ease;
+    display: none;
+}
 
-  @media (max-width: 480px) {
-    #startButton {
-      padding: 16px 30px;
-      font-size: 18px;
-      min-width: 160px;
-    }
-    
-    .poweredbysnap-logo > img {
-      width: 130px;
-    }
-    
-    .flamingo-logo > img {
-      width: 200px;
-    }
-    
-    .spinner {
-      width: 40px;
-      height: 40px;
-    }
-    
-    #loading {
-      padding: 25px;
-    }
-  }
+.test-button:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+}
 
-  /* Для очень высоких экранов */
-  @media (min-height: 800px) {
-    .poweredbysnap-logo {
-      bottom: 40px;
-    }
-    
-    #startButton {
-      padding: 22px 45px;
-      font-size: 26px;
-    }
-  }
+/* Кнопка перезапуска */
+.restart-button {
+    position: absolute;
+    bottom: 150px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    font-size: 16px;
+    background: linear-gradient(135deg, #4CAF50, #388E3C);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    z-index: 1002;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    transition: all 0.3s ease;
+    display: none;
+}
 
-  /* Анимации */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+.restart-button:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
 
-  @keyframes pulse {
+/* Анимации */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes pulse {
     0% { box-shadow: 0 10px 30px rgba(255, 252, 0, 0.3); }
     50% { box-shadow: 0 10px 40px rgba(255, 252, 0, 0.5); }
     100% { box-shadow: 0 10px 30px rgba(255, 252, 0, 0.3); }
-  }
+}
 
-  /* Класс для плавного появления */
-  .fade-in {
-    animation: fadeIn 0.3s ease-out forwards;
-  }
+@keyframes surfaceFound {
+    0% { color: #FFFC00; }
+    50% { color: #00FF00; }
+    100% { color: #FFFC00; }
+}
 
-  /* Класс для пульсации кнопки */
-  .pulse {
-    animation: pulse 2s infinite;
-  }
+.surface-found {
+    animation: surfaceFound 1s ease-in-out;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    #startButton {
+        padding: 18px 35px;
+        font-size: 20px;
+        min-width: 180px;
+    }
+    
+    #instructions {
+        left: 15px;
+        right: 15px;
+    }
+    
+    .instructions-content {
+        padding: 18px;
+    }
+    
+    .instructions-title {
+        font-size: 18px;
+    }
+    
+    .instructions-steps {
+        font-size: 14px;
+    }
+    
+    .poweredbysnap-logo {
+        bottom: 20px;
+    }
+    
+    .poweredbysnap-logo > img {
+        width: 160px;
+    }
+    
+    .test-button, .restart-button {
+        bottom: 90px;
+        padding: 10px 20px;
+        font-size: 15px;
+    }
+    
+    .restart-button {
+        bottom: 140px;
+    }
+}
+
+@media (max-width: 480px) {
+    #startButton {
+        padding: 16px 30px;
+        font-size: 18px;
+        min-width: 160px;
+    }
+    
+    #instructions {
+        left: 10px;
+        right: 10px;
+        top: 15px;
+    }
+    
+    .instructions-content {
+        padding: 15px;
+    }
+    
+    .instructions-title {
+        font-size: 16px;
+    }
+    
+    .instructions-steps {
+        font-size: 13px;
+    }
+    
+    .surface-status {
+        font-size: 14px;
+    }
+    
+    .poweredbysnap-logo > img {
+        width: 140px;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+    }
+    
+    #loading {
+        padding: 25px;
+        min-width: 220px;
+    }
+}
+
+/* Для высоких экранов */
+@media (min-height: 800px) {
+    .poweredbysnap-logo {
+        bottom: 30px;
+    }
+    
+    #startButton {
+        padding: 22px 45px;
+        font-size: 26px;
+    }
+    
+    .test-button {
+        bottom: 120px;
+    }
+    
+    .restart-button {
+        bottom: 180px;
+    }
+}
+
+/* Ландшафтная ориентация */
+@media (orientation: landscape) and (max-height: 500px) {
+    #instructions {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+    }
+    
+    .instructions-content {
+        padding: 12px;
+    }
+    
+    .instructions-title {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .instructions-steps {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+    
+    .poweredbysnap-logo {
+        bottom: 15px;
+    }
+    
+    .poweredbysnap-logo > img {
+        width: 120px;
+    }
+}
