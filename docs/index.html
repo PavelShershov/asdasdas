@@ -2,19 +2,240 @@
 <html lang="fr">
   <head>
     <meta charset="utf-8">
-    <title>Camera kit demo</title>
-    <meta name="description" content="Camera kit demo">
+    <title>AR Game Figures</title>
+    <meta name="description" content="AR игровые фигуры с камерой">
     <meta name="robots" content="noindex">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    
     <link href="index.css" rel="stylesheet">
+    <style>
+      /* Дополнительные стили для кнопки */
+      #startButton {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px 40px;
+        font-size: 24px;
+        background: #FFFC00;
+        color: black;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        z-index: 1000;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        transition: transform 0.2s;
+      }
+      
+      #startButton:hover {
+        transform: translate(-50%, -50%) scale(1.05);
+      }
+      
+      #startButton:active {
+        transform: translate(-50%, -50%) scale(0.95);
+      }
+      
+      /* Индикатор загрузки */
+      #loading {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0,0,0,0.8);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        z-index: 999;
+      }
+      
+      .spinner {
+        border: 4px solid rgba(255,255,255,0.3);
+        border-top: 4px solid #FFFC00;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* Сообщение об ошибке */
+      #errorMessage {
+        display: none;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        background: rgba(255,0,0,0.9);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        z-index: 1001;
+        text-align: center;
+      }
+      
+      /* Инструкция */
+      #instructions {
+        display: none;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        z-index: 100;
+        text-align: center;
+        font-size: 14px;
+      }
+    </style>
     <script src="./packed.js"></script>
   </head>
 
   <body>
+    <!-- Кнопка запуска AR -->
+    <button id="startButton">🎮 Запустить AR</button>
+    
+    <!-- Индикатор загрузки -->
+    <div id="loading">
+      <div class="spinner"></div>
+      <div>Загрузка AR...</div>
+    </div>
+    
+    <!-- Сообщение об ошибке -->
+    <div id="errorMessage"></div>
+    
+    <!-- Инструкция -->
+    <div id="instructions">
+      Наведите камеру на ровную поверхность (стол, пол). Фигура появится автоматически.
+    </div>
+    
+    <!-- Логотип Snapchat -->
     <div class="poweredbysnap-logo">
       <img id="image" src="./assets/Powered_bysnap.png" alt="Powered by Snap">
     </div>
-    <canvas id="canvas"></canvas>
+    
+    <!-- Canvas для AR (изначально скрыт) -->
+    <canvas id="canvas" style="display: none;"></canvas>
+    
+    <!-- Видео элемент -->
     <video id="video" style="display: none;" autoplay muted playsinline></video>
+    
+    <script>
+      // Этот скрипт будет работать с уже скомпилированным packed.js
+      // Добавляем обработчик для кнопки
+      document.addEventListener('DOMContentLoaded', function() {
+        const startButton = document.getElementById('startButton');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('errorMessage');
+        const canvas = document.getElementById('canvas');
+        const instructions = document.getElementById('instructions');
+        
+        // Функция проверки поддержки камеры
+        function checkCameraSupport() {
+          return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+        }
+        
+        // Функция проверки HTTPS
+        function isSecureContext() {
+          return window.location.protocol === 'https:' || 
+                 window.location.hostname === 'localhost' || 
+                 window.location.hostname === '127.0.0.1';
+        }
+        
+        // Проверка при загрузке
+        if (!checkCameraSupport()) {
+          errorMessage.textContent = 'Ваш браузер не поддерживает камеру. Пожалуйста, обновите браузер.';
+          errorMessage.style.display = 'block';
+          startButton.disabled = true;
+          startButton.textContent = '❌ Не поддерживается';
+        }
+        
+        if (!isSecureContext() && window.location.hostname !== 'localhost') {
+          errorMessage.textContent = 'Требуется HTTPS. Откройте https://' + window.location.host;
+          errorMessage.style.display = 'block';
+        }
+        
+        // Обработчик кнопки запуска
+        startButton.addEventListener('click', async function() {
+          startButton.style.display = 'none';
+          loading.style.display = 'block';
+          
+          try {
+            // Запускаем камеру
+            const stream = await navigator.mediaDevices.getUserMedia({
+              video: {
+                facingMode: 'environment',
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+              }
+            });
+            
+            // Показываем инструкции
+            instructions.style.display = 'block';
+            
+            // Скрываем загрузку
+            loading.style.display = 'none';
+            
+            // Показываем canvas (если packed.js его не показал)
+            canvas.style.display = 'block';
+            
+            // Сохраняем поток для возможного использования
+            window.cameraStream = stream;
+            
+            // Если есть глобальная функция для запуска AR, вызываем её
+            if (window.startAR) {
+              window.startAR(stream);
+            }
+            
+          } catch (error) {
+            console.error('Camera error:', error);
+            loading.style.display = 'none';
+            startButton.style.display = 'block';
+            
+            let message = 'Ошибка: ';
+            switch(error.name) {
+              case 'NotAllowedError':
+                message = 'Доступ к камере запрещен. Разрешите камеру в настройках браузера.';
+                break;
+              case 'NotFoundError':
+                message = 'Камера не найдена. Убедитесь, что камера подключена и не занята другим приложением.';
+                break;
+              case 'NotReadableError':
+                message = 'Камера занята другим приложением. Закройте другие приложения, использующие камеру.';
+                break;
+              default:
+                message = 'Не удалось получить доступ к камере: ' + error.message;
+            }
+            
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+          }
+        });
+        
+        // Авто-проверка: если пользователь уже разрешил камеру ранее
+        navigator.permissions && navigator.permissions.query({ name: 'camera' })
+          .then(function(permissionStatus) {
+            if (permissionStatus.state === 'granted') {
+              startButton.textContent = '🎮 Камера разрешена - Запустить AR';
+            }
+            permissionStatus.onchange = function() {
+              if (this.state === 'granted') {
+                startButton.textContent = '🎮 Камера разрешена - Запустить AR';
+              }
+            };
+          });
+      });
+    </script>
   </body>
 </html>
