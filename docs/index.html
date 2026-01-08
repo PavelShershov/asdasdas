@@ -1,404 +1,172 @@
-/* Основные стили */
-body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background: #000;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Segoe UI', Arial, sans-serif;
-    height: 100vh;
-    width: 100vw;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-}
-
-/* Canvas для AR */
-#canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    display: none;
-    background: #000;
-}
-
-/* Кнопка запуска AR */
-#startButton {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 20px 40px;
-    font-size: 24px;
-    background: linear-gradient(135deg, #FFFC00, #FFD700);
-    color: #000;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    z-index: 1000;
-    box-shadow: 0 10px 30px rgba(255, 252, 0, 0.3);
-    transition: all 0.3s ease;
-    font-weight: bold;
-    min-width: 200px;
-    text-align: center;
-    display: block;
-    animation: fadeIn 0.5s ease-out, pulse 2s infinite;
-}
-
-#startButton:hover {
-    transform: translate(-50%, -50%) scale(1.05);
-    box-shadow: 0 15px 40px rgba(255, 252, 0, 0.4);
-}
-
-#startButton:active {
-    transform: translate(-50%, -50%) scale(0.95);
-}
-
-#startButton:disabled {
-    background: #666;
-    color: #999;
-    cursor: not-allowed;
-    animation: none;
-    transform: translate(-50%, -50%);
-    box-shadow: none;
-}
-
-/* Индикатор загрузки */
-#loading {
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.9);
-    color: white;
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-    z-index: 999;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    min-width: 250px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.spinner {
-    border: 5px solid rgba(255, 255, 255, 0.2);
-    border-top: 5px solid #FFFC00;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
-}
-
-#loadingText {
-    font-size: 16px;
-    margin-top: 10px;
-}
-
-/* Сообщение об ошибке */
-#errorMessage {
-    display: none;
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    right: 20px;
-    background: linear-gradient(135deg, rgba(255, 71, 87, 0.95), rgba(255, 56, 56, 0.95));
-    color: white;
-    padding: 15px 20px;
-    border-radius: 12px;
-    z-index: 1001;
-    text-align: center;
-    font-size: 14px;
-    line-height: 1.5;
-    box-shadow: 0 5px 20px rgba(255, 56, 56, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-}
-
-/* Инструкции */
-#instructions {
-    display: none;
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    right: 20px;
-    z-index: 100;
-}
-
-.instructions-content {
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(20, 20, 20, 0.9));
-    color: white;
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
-}
-
-.instructions-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: #FFFC00;
-}
-
-.instructions-steps {
-    font-size: 15px;
-    line-height: 1.6;
-    margin-bottom: 15px;
-    color: #fff;
-}
-
-.surface-status {
-    color: #FFFC00;
-    font-weight: bold;
-    font-size: 16px;
-    margin: 15px 0;
-    min-height: 24px;
-}
-
-.instructions-tip {
-    font-size: 13px;
-    color: #aaa;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Логотип Snapchat */
-.poweredbysnap-logo {
-    width: 100%;
-    position: absolute;
-    bottom: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    pointer-events: none;
-}
-
-.poweredbysnap-logo > img {
-    width: 180px;
-    max-width: 50%;
-    height: auto;
-    opacity: 0.9;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
-}
-
-/* Тестовая кнопка */
-.test-button {
-    position: absolute;
-    bottom: 100px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 12px 24px;
-    font-size: 16px;
-    background: linear-gradient(135deg, #2196F3, #1976D2);
-    color: white;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    z-index: 1002;
-    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
-    transition: all 0.3s ease;
-    display: none;
-}
-
-.test-button:hover {
-    transform: translateX(-50%) scale(1.05);
-    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
-}
-
-/* Кнопка перезапуска */
-.restart-button {
-    position: absolute;
-    bottom: 150px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 12px 24px;
-    font-size: 16px;
-    background: linear-gradient(135deg, #4CAF50, #388E3C);
-    color: white;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    z-index: 1002;
-    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-    transition: all 0.3s ease;
-    display: none;
-}
-
-.restart-button:hover {
-    transform: translateX(-50%) scale(1.05);
-    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
-}
-
-/* Анимации */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
-
-@keyframes pulse {
-    0% { box-shadow: 0 10px 30px rgba(255, 252, 0, 0.3); }
-    50% { box-shadow: 0 10px 40px rgba(255, 252, 0, 0.5); }
-    100% { box-shadow: 0 10px 30px rgba(255, 252, 0, 0.3); }
-}
-
-@keyframes surfaceFound {
-    0% { color: #FFFC00; }
-    50% { color: #00FF00; }
-    100% { color: #FFFC00; }
-}
-
-.surface-found {
-    animation: surfaceFound 1s ease-in-out;
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-    #startButton {
-        padding: 18px 35px;
-        font-size: 20px;
-        min-width: 180px;
-    }
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>AR Игровые Фигуры</title>
+    <meta name="description" content="AR платформа для игровых фигур с камерой">
+    <meta name="robots" content="noindex">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    #instructions {
-        left: 15px;
-        right: 15px;
-    }
+    <link rel="stylesheet" href="index.css">
+    <script src="./packed.js" defer></script>
+</head>
+<body>
+    <!-- Основная кнопка запуска -->
+    <button id="startButton">🎮 Запустить AR</button>
     
-    .instructions-content {
-        padding: 18px;
-    }
+    <!-- Индикатор загрузки -->
+    <div id="loading">
+        <div class="spinner"></div>
+        <div id="loadingText">Подготовка AR...</div>
+    </div>
     
-    .instructions-title {
-        font-size: 18px;
-    }
+    <!-- Сообщение об ошибке -->
+    <div id="errorMessage"></div>
     
-    .instructions-steps {
-        font-size: 14px;
-    }
+    <!-- Инструкции -->
+    <div id="instructions">
+        <div class="instructions-content">
+            <div class="instructions-title">🔍 Ищем поверхность...</div>
+            <div class="instructions-steps">
+                1. Наведите камеру на <strong>ровный стол или пол</strong><br>
+                2. Медленно двигайте камерой из стороны в сторону<br>
+                3. Дождитесь появления фигуры
+            </div>
+            <div id="surfaceStatus" class="surface-status">
+                Ожидание поверхности...
+            </div>
+            <div class="instructions-tip">
+                <small>Если фигура не появляется, попробуйте лучшее освещение</small>
+            </div>
+        </div>
+    </div>
     
-    .poweredbysnap-logo {
-        bottom: 20px;
-    }
+    <!-- Логотип Snapchat -->
+    <div class="poweredbysnap-logo">
+        <img src="./assets/Powered_bysnap.png" alt="Powered by Snap">
+    </div>
     
-    .poweredbysnap-logo > img {
-        width: 160px;
-    }
+    <!-- Canvas для AR -->
+    <canvas id="canvas"></canvas>
     
-    .test-button, .restart-button {
-        bottom: 90px;
-        padding: 10px 20px;
-        font-size: 15px;
-    }
+    <!-- Тестовая кнопка -->
+    <button id="testCameraButton" class="test-button">
+        📷 Тест камеры
+    </button>
     
-    .restart-button {
-        bottom: 140px;
-    }
-}
-
-@media (max-width: 480px) {
-    #startButton {
-        padding: 16px 30px;
-        font-size: 18px;
-        min-width: 160px;
-    }
+    <!-- Перезапуск -->
+    <button id="restartButton" class="restart-button">
+        🔄 Перезапустить AR
+    </button>
     
-    #instructions {
-        left: 10px;
-        right: 10px;
-        top: 15px;
-    }
-    
-    .instructions-content {
-        padding: 15px;
-    }
-    
-    .instructions-title {
-        font-size: 16px;
-    }
-    
-    .instructions-steps {
-        font-size: 13px;
-    }
-    
-    .surface-status {
-        font-size: 14px;
-    }
-    
-    .poweredbysnap-logo > img {
-        width: 140px;
-    }
-    
-    .spinner {
-        width: 40px;
-        height: 40px;
-    }
-    
-    #loading {
-        padding: 25px;
-        min-width: 220px;
-    }
-}
-
-/* Для высоких экранов */
-@media (min-height: 800px) {
-    .poweredbysnap-logo {
-        bottom: 30px;
-    }
-    
-    #startButton {
-        padding: 22px 45px;
-        font-size: 26px;
-    }
-    
-    .test-button {
-        bottom: 120px;
-    }
-    
-    .restart-button {
-        bottom: 180px;
-    }
-}
-
-/* Ландшафтная ориентация */
-@media (orientation: landscape) and (max-height: 500px) {
-    #instructions {
-        top: 10px;
-        left: 10px;
-        right: 10px;
-    }
-    
-    .instructions-content {
-        padding: 12px;
-    }
-    
-    .instructions-title {
-        font-size: 14px;
-        margin-bottom: 8px;
-    }
-    
-    .instructions-steps {
-        font-size: 12px;
-        line-height: 1.4;
-    }
-    
-    .poweredbysnap-logo {
-        bottom: 15px;
-    }
-    
-    .poweredbysnap-logo > img {
-        width: 120px;
-    }
-}
+    <script>
+        // Глобальные функции для тестирования
+        window.testCameraOnly = async function() {
+            try {
+                document.getElementById('testCameraButton').style.display = 'none';
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('loadingText').textContent = 'Тестируем камеру...';
+                
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.autoplay = true;
+                video.muted = true;
+                video.playsInline = true;
+                video.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 9998;
+                    object-fit: cover;
+                `;
+                document.body.appendChild(video);
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('errorMessage').innerHTML = `
+                    <div style="color: #00FF00;">
+                        ✅ Камера работает!<br>
+                        <small>Видео должно быть видно выше. Закройте это окно.</small>
+                    </div>
+                `;
+                document.getElementById('errorMessage').style.display = 'block';
+                
+                // Удаляем видео через 10 секунд
+                setTimeout(() => {
+                    if (video.parentNode) {
+                        video.parentNode.removeChild(video);
+                    }
+                    document.getElementById('testCameraButton').style.display = 'block';
+                    document.getElementById('errorMessage').style.display = 'none';
+                }, 10000);
+                
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('testCameraButton').style.display = 'block';
+                
+                let message = '❌ Ошибка камеры: ';
+                if (error.name === 'NotAllowedError') {
+                    message = 'Доступ к камере запрещен. Разрешите в настройках браузера.';
+                } else if (error.name === 'NotFoundError') {
+                    message = 'Камера не найдена. Устройство не имеет камеры или она отключена.';
+                } else {
+                    message = error.message;
+                }
+                
+                document.getElementById('errorMessage').textContent = message;
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        };
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            // Проверка поддержки
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                document.getElementById('startButton').disabled = true;
+                document.getElementById('startButton').textContent = '❌ Не поддерживается';
+                document.getElementById('errorMessage').textContent = 
+                    'Ваш браузер не поддерживает доступ к камере. Попробуйте Chrome на Android или Safari на iOS.';
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+            
+            // Проверка HTTPS
+            if (!window.isSecureContext && window.location.hostname !== 'localhost' && 
+                window.location.hostname !== '127.0.0.1') {
+                document.getElementById('errorMessage').innerHTML = 
+                    '⚠️ Для работы AR требуется HTTPS.<br>' +
+                    '<small>GitHub Pages автоматически использует HTTPS.</small>';
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+            
+            // Обработчики кнопок
+            document.getElementById('testCameraButton').addEventListener('click', window.testCameraOnly);
+            document.getElementById('restartButton').addEventListener('click', function() {
+                if (window.stopAR) {
+                    window.stopAR();
+                }
+                document.getElementById('startButton').style.display = 'block';
+                document.getElementById('canvas').style.display = 'none';
+                document.getElementById('instructions').style.display = 'none';
+                document.getElementById('restartButton').style.display = 'none';
+                document.getElementById('errorMessage').style.display = 'none';
+            });
+            
+            // Скрыть кнопки при старте
+            document.getElementById('testCameraButton').style.display = 'none';
+            document.getElementById('restartButton').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
